@@ -14,11 +14,13 @@
     "next-auth": "^4.24.7",
     "nodemailer": "^6.9.15",
     "pg": "^8.13.0",
+    "prop-types": "^15.8.1",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/prop-types": "^15.7.13",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",

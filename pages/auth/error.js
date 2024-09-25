@@ -8,6 +8,13 @@ export default function ErrorPage() {
     <div>
       <h1>Authentication Error</h1>
       <p>An error occurred: {error}</p>
+      {error === 'OAuthAccountNotLinked' && (
+        <p>
+          It seems you already have an account with this email address. 
+          Please sign in with the method you used originally.
+        </p>
+      )}
+      <button onClick={() => router.push('/')}>Back to Sign In</button>
     </div>
   )
 }

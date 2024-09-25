@@ -29,37 +29,33 @@ export default NextAuth({
       }
     }),
   ],
-  
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
-      // 確保用戶始終有一個電子郵件地址
-      if (!user.email && profile.email) {
-        user.email = profile.email;
-      }
-      // 如果還是沒有電子郵件，阻止登入
-      if (!user.email) {
-        return false;
-      }
-      return true;
-    },
-    async session({ session, token, user }) {
-      // 確保 session 對象包含用戶信息
-      if (session?.user) {
-        session.user.id = user.id;
-      }
-      return session;
-    },
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.uid = user.id;
       }
+      if (account) {
+        token.accessToken = account.access_token;
+        token.provider_id = account.provider;
+      }
       return token;
-    }
+    },
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.id = token.uid;
+        session.accessToken = token.accessToken;
+        session.user.provider_id = token.provider_id;
+      }
+      return session;
+    },
   },
   pages: {
-    signIn: '/auth/signin',
-    verifyRequest: '/auth/verify-request',
-    error: '/auth/error',
+    signIn: '/',  // 將登入頁面設置為首頁
+    error: '/auth/error', // 錯誤頁面路徑
   },
   debug: process.env.NODE_ENV === 'development',
 })

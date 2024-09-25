@@ -1,25 +1,25 @@
-import bcrypt from "bcrypt"
-import nodemailer from "nodemailer"
-import db from '../../../lib/db'
+import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
+import { pool } from '../../../lib/db';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const { email, password } = req.body
-    const hashedPassword = await bcrypt.hash(password, 10)
+    const { email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
     try {
-      const { rows } = await db.query(
+      const { rows } = await pool.query(
         'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email',
         [email, hashedPassword]
       );
       const newUser = rows[0];
-      await sendEmailToAdmin(email)
-      res.status(200).json({ message: "User created successfully", user: newUser })
+      await sendEmailToAdmin(email);
+      res.status(200).json({ message: "User created successfully", user: newUser });
     } catch (error) {
       console.error(error);
-      res.status(400).json({ message: "Error creating user" })
+      res.status(400).json({ message: "Error creating user" });
     }
   } else {
-    res.status(405).json({ message: "Method not allowed" })
+    res.status(405).json({ message: "Method not allowed" });
   }
 }
 
